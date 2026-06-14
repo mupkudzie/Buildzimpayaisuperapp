@@ -77,24 +77,63 @@ const VideoPanelNew = ({ displayMode = "video", announcementText = "", companyIn
   };
  
   if (showVideo) {
+  if (!playlist.length || !currentSrc) {
+    return (
+      <div
+        style={{
+          height: "100%",
+          width: "100%",
+          position: "relative",
+          overflow: "hidden",
+          background: "#000",
+          borderRadius: "6px",
+        }}
+      >
+        <CompanyInfoCard companyInfo={companyInfo} />
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
-        background: "#000",
-        color: "#fff",
-        padding: "20px",
         height: "100%",
+        width: "100%",
+        position: "relative",
+        overflow: "hidden",
+        background: "#000",
+        borderRadius: "6px",
       }}
     >
-      <h2>Video Debug</h2>
+      <video
+        key={`${source}-${currentIndex}-${currentSrc}`}
+        ref={videoRef}
+        src={currentSrc}
+        autoPlay
+        muted={isMuted}
+        playsInline
+        loop={playlist.length === 1}
+        preload="auto"
+        onEnded={handleEnded}
+        onError={handleError}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: "100%",
+          width: "100%",
+          objectFit: "fill",
+          borderRadius: "6px",
+        }}
+      />
 
-      <p>Bridge: {window.AFCBridge ? "FOUND" : "NOT FOUND"}</p>
-
-      <p>Playlist Length: {playlist.length}</p>
-
-      <p>Current Source: {currentSrc || "EMPTY"}</p>
-
-      <p>Source: {source}</p>
+      {showFallback && (
+        <div style={{ position: "absolute", inset: 0, zIndex: 50 }}>
+          <CompanyInfoCard companyInfo={companyInfo} />
+        </div>
+      )}
     </div>
   );
 };
