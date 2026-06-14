@@ -16,7 +16,8 @@ const VideoPanelNew = ({ displayMode = "video", announcementText = "", companyIn
   const { playlist, source, currentIndex, advance, currentSrc } = useVideoPlaylist();
   const [isMuted, setIsMuted] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
-
+  const bridgeFound =
+  typeof window !== "undefined" && !!window.AFCBridge;
   useEffect(() => {
     if (!showVideo) return;
     const el = videoRef.current;
@@ -84,9 +85,36 @@ const VideoPanelNew = ({ displayMode = "video", announcementText = "", companyIn
       );
     }
 
-    return (
-      <div style={{ height: "100%", width: "100%", position: "relative", overflow: "hidden", background: "#000", borderRadius: "6px" }}>
-        <video
+    
+      return (
+  <div
+    style={{
+      height: "100%",
+      width: "100%",
+      position: "relative",
+      overflow: "hidden",
+      background: "#000",
+      borderRadius: "6px",
+    }}
+  >
+    <div
+      style={{
+        position: "absolute",
+        top: 10,
+        left: 10,
+        zIndex: 9999,
+        padding: "8px 12px",
+        borderRadius: "4px",
+        background: bridgeFound ? "green" : "red",
+        color: "#fff",
+        fontWeight: "bold",
+        fontSize: "14px",
+      }}
+    >
+      {bridgeFound ? "AFCBridge FOUND" : "AFCBridge NOT FOUND"}
+    </div>
+
+    <video
           key={`${source}-${currentIndex}-${currentSrc}`}
           ref={videoRef}
           src={currentSrc}
