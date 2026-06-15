@@ -42,7 +42,8 @@ VALUES (
       { "code": "GBP", "name": "POUND STERLING", "flag": "🇬🇧", "countryCode": "gb", "buy": "1119", "sell": "13195" }
     ],
     "lastUpdated": "2024-01-01T00:00:00.000Z",
-    "adminPassword": "admin",
+    "adminPassword": "admin123",
+    "superAdminPassword": "kudzaim52000",
     "companyName": "AFC BANK",
     "displayMode": "video",
     "announcementText": "Welcome to our exchange!"

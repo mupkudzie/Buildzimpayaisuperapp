@@ -1,4 +1,4 @@
 @echo off
 echo Starting Prime Exchange Display in Kiosk Mode using Chrome...
-start chrome --kiosk --start-fullscreen --autoplay-policy=no-user-gesture-required "http://localhost:5173"
+start chrome --kiosk --start-fullscreen --autoplay-policy=no-user-gesture-required "http://localhost:8080"
 exit

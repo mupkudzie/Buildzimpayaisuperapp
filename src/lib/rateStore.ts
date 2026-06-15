@@ -22,13 +22,15 @@ export function loadRates(): ExchangeRate[] {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
         // Migrate old data without fullName
-        return parsed.map((r: any, i: number) => ({
+        return parsed.map((r: Partial<ExchangeRate>, i: number) => ({
           ...r,
           fullName: r.fullName || DEFAULT_RATES[i]?.fullName || r.currency,
         }));
       }
     }
-  } catch {}
+  } catch (err) {
+    console.error("Error loading rates:", err);
+  }
   return [...DEFAULT_RATES];
 }
 

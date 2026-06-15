@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
-import { loadState, saveState, AppState } from "@/lib/store";
+import { loadState, saveState, AppState, getLocalState } from "@/lib/store";
+import { supabase } from "@/lib/supabase";
 import ExchangeRateCard from "@/components/ExchangeRateCard";
 import VideoPanelNew from "@/components/VideoPanelNew";
 import TickerBar from "@/components/TickerBar";
@@ -7,7 +8,6 @@ import AdminDrawer from "@/components/AdminDrawer";
 import LoginModalNew from "@/components/LoginModalNew";
 import FullscreenHint from "@/components/FullscreenHint";
 import SuperAdminDrawer from "@/components/SuperAdminDrawer";
-import DeviceGate from "@/components/DeviceGate";
 
 const Index = () => {
   const [state, setState] = useState<AppState | null>(null);
@@ -20,17 +20,57 @@ const Index = () => {
     };
     init();
 
-    // Sync state across tabs (and within tab via custom event)
+    // 1. Supabase Realtime channel subscription for instant state push updates
+    const channel = supabase
+      .channel("app_state_realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "app_state", filter: "id=eq.1" },
+        (payload) => {
+          if (payload.new && (payload.new as any).state) {
+            const newState = (payload.new as any).state as AppState;
+            setState(newState);
+            localStorage.setItem("afc.appState", JSON.stringify(newState));
+          }
+        }
+      )
+      .subscribe();
+
+    // 2. Visibility-aware backup polling (every 6 seconds, skips when tab is in background)
+    const pollInterval = setInterval(async () => {
+      if (document.hidden) return; 
+      const s = await loadState();
+      setState(s);
+    }, 6000);
+
+    // 3. Immediately refresh when tab becomes visible (e.g., waking from screen saver / kiosk wake)
+    const handleVisibilityChange = async () => {
+      if (!document.hidden) {
+        const s = await loadState();
+        setState(s);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // 4. Cross-tab synchronization (O(1) synchronous load from local storage to bypass redundant DB queries)
     const onStorage = (e: StorageEvent) => {
-      if (e.key === "afc.appState") loadState().then(setState);
+      if (e.key === "afc.appState") {
+        const s = getLocalState();
+        setState(s);
+      }
     };
     const onLocal = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       if (detail) setState(detail);
     };
+
     window.addEventListener("storage", onStorage);
     window.addEventListener("app-state-updated", onLocal);
+
     return () => {
+      supabase.removeChannel(channel);
+      clearInterval(pollInterval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("storage", onStorage);
       window.removeEventListener("app-state-updated", onLocal);
     };
@@ -65,7 +105,6 @@ const Index = () => {
   const globalFamily = state.globalFontFamily || "Montserrat, sans-serif";
 
   return (
-    <DeviceGate>
     <div style={{
       width: "100vw", height: "100vh",
       display: "flex", flexDirection: "column",
@@ -140,7 +179,13 @@ const Index = () => {
         <LoginModalNew
           password={state.adminPassword}
           superPassword={state.superAdminPassword || "kudzaim52000"}
-          onLogin={(role) => setAdminMode(role === "super" ? "super" : "open")}
+          onLogin={async (role) => {
+            if (role) {
+              const freshState = await loadState();
+              setState(freshState);
+              setAdminMode(role === "super" ? "super" : "open");
+            }
+          }}
         />
       )}
       {adminMode === "open" && (
@@ -150,7 +195,6 @@ const Index = () => {
         <SuperAdminDrawer state={state} onUpdate={handleUpdate} onClose={() => setAdminMode("closed")} />
       )}
     </div>
-    </DeviceGate>
   );
 };
 

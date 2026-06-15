@@ -33,7 +33,7 @@ async function extractLines(file: File): Promise<{ lines: string[]; rawText: str
         for (let p = 1; p <= pdf.numPages; p++) {
           const page = await pdf.getPage(p);
           const content = await page.getTextContent();
-          for (const raw of content.items as any[]) {
+          for (const raw of content.items as unknown as Array<{ str: string; transform: number[] }>) {
             const text = (raw.str as string).trim();
             if (!text) continue;
             const x = Math.round(raw.transform[4]);

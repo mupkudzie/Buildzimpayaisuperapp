@@ -124,11 +124,11 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
 
   
   const isLight = state.adminTheme === "light";
-  const bgMain = isLight ? "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)" : "linear-gradient(180deg, #0f172a 0%, #0c1220 100%)";
-  const textMain = isLight ? "#0f172a" : "#fff";
-  const textMuted = isLight ? "#64748b" : "rgba(255,255,255,0.4)";
-  const bgInput = isLight ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.3)";
-  const borderLine = isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.08)";
+  const bgMain = isLight ? "#ffffff" : "#0f0f0f";
+  const textMain = isLight ? "#000000" : "#ffffff";
+  const textMuted = isLight ? "#212121" : "#f1f1f1";
+  const bgInput = isLight ? "#f9f9f9" : "#272727";
+  const borderLine = isLight ? "#e5e5e5" : "#3f3f3f";
 
   const tabItems = [
     { key: "rates" as const, label: "Rates", icon: "📊" },
@@ -139,42 +139,54 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
   ];
 
   return (
-    <div style={ Object.assign({}, { "--text-muted": textMuted, "--text-main": textMain, "--bg-input": bgInput, "--border-line": borderLine } as any, {
-      position: "fixed", inset: 0, zIndex: 10000,
-      background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)",
-      display: "flex", justifyContent: "flex-end",
-    }) } onClick={onClose}>
+    <div 
+      style={ Object.assign({}, { "--text-muted": textMuted, "--text-main": textMain, "--bg-input": bgInput, "--border-line": borderLine } as Record<string, string>, {
+        position: "fixed", inset: 0, zIndex: 10000,
+        display: "flex", justifyContent: "flex-end",
+      }) }
+    >
+      {/* Sibling backdrop overlay with blur, keeping drawer text crisp and sharp */}
+      <div 
+        style={{
+          position: "absolute", inset: 0,
+          background: "rgba(0,0,0,0.5)",
+          backdropFilter: "blur(4px)",
+        }} 
+        onClick={onClose} 
+      />
       <div style={{
+        position: "relative",
         width: "460px", maxWidth: "92vw", height: "100%",
         background: bgMain, color: textMain,
         display: "flex", flexDirection: "column",
         overflow: "hidden",
         boxShadow: "-8px 0 40px rgba(0,0,0,0.5), -2px 0 15px rgba(0,0,0,0.3)",
-        borderLeft: "1px solid rgba(255,255,255,0.06)",
+        borderLeft: `1px solid ${borderLine}`,
+        zIndex: 1,
       }} onClick={e => e.stopPropagation()}>
 
         {/* Header */}
         <div style={{
           display: "flex", justifyContent: "space-between", alignItems: "center",
           padding: "20px 24px",
-          background: "linear-gradient(135deg, rgba(212,168,83,0.08) 0%, transparent 100%)",
-          borderBottom: "1px solid rgba(212,168,83,0.15)",
+          background: isLight ? "#ffffff" : "#0f0f0f",
+          borderBottom: `1px solid ${borderLine}`,
         }}>
           <div>
             <div style={{
               fontFamily: "Montserrat, sans-serif", fontWeight: 800,
-              fontSize: "16px", color: "#d4af37",
-              letterSpacing: "3px",
-            }}>ADMIN PANEL</div>
+              fontSize: "16px", color: "#ff0000",
+              letterSpacing: "2px",
+            }}>AFC ADMIN</div>
             <div style={{
               fontFamily: "Inter, sans-serif", fontSize: "11px",
               color: textMuted, marginTop: "2px",
             }}>Manage exchange rates & display</div>
           </div>
           <button onClick={onClose} style={{
-            background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+            background: "rgba(255,255,255,0.05)", border: `1px solid ${borderLine}`,
             color: textMuted, fontSize: "16px", cursor: "pointer",
-            width: "36px", height: "36px", borderRadius: "8px",
+            width: "36px", height: "36px", borderRadius: "18px",
             display: "flex", alignItems: "center", justifyContent: "center",
             transition: "all 0.2s",
           }}>✕</button>
@@ -183,10 +195,10 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
         {/* Feedback */}
         {feedback && (
           <div style={{
-            background: "linear-gradient(90deg, rgba(16,185,129,0.15) 0%, rgba(16,185,129,0.05) 100%)",
+            background: "rgba(16,185,129,0.15)",
             color: "#10b981", padding: "10px 24px", fontSize: "13px",
             fontFamily: "Inter, sans-serif", fontWeight: 500,
-            borderBottom: "1px solid rgba(16,185,129,0.15)",
+            borderBottom: `1px solid ${borderLine}`,
             display: "flex", alignItems: "center", gap: "8px",
           }}>
             <span>✓</span> {feedback}
@@ -195,15 +207,15 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
 
         {/* Debug overlay */}
         {showDebug && (
-          <div style={{ position: "absolute", inset: 0, zIndex: 9999, background: "#0f172a", display: "flex", flexDirection: "column", padding: "20px", gap: "12px" }}>
+          <div style={{ position: "absolute", inset: 0, zIndex: 9999, background: "#0f0f0f", display: "flex", flexDirection: "column", padding: "20px", gap: "12px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: "#d4af37", fontWeight: 700, fontSize: "14px", fontFamily: "Montserrat, sans-serif" }}>PDF Debug Output</span>
-              <button onClick={() => setShowDebug(false)} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: textMain, fontSize: "16px", cursor: "pointer", width: "32px", height: "32px", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+              <span style={{ color: "#ff0000", fontWeight: 700, fontSize: "14px", fontFamily: "Montserrat, sans-serif" }}>PDF Debug Output</span>
+              <button onClick={() => setShowDebug(false)} style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${borderLine}`, color: textMain, fontSize: "16px", cursor: "pointer", width: "32px", height: "32px", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
             </div>
             <p style={{ color: textMuted, fontSize: "12px", margin: 0 }}>Select all text below, copy, and send to developer.</p>
             <textarea
               readOnly value={debugText}
-              style={{ flex: 1, background: bgInput, color: "#a0f0a0", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "8px", padding: "12px", fontSize: "11px", fontFamily: "JetBrains Mono, monospace", resize: "none" }}
+              style={{ flex: 1, background: bgInput, color: "#a0f0a0", border: `1px solid ${borderLine}`, borderRadius: "8px", padding: "12px", fontSize: "11px", fontFamily: "JetBrains Mono, monospace", resize: "none" }}
               onClick={e => (e.target as HTMLTextAreaElement).select()}
             />
           </div>
@@ -212,26 +224,26 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
         {/* Tabs */}
         <div style={{
           display: "flex", gap: "2px", padding: "4px 12px",
-          background: "rgba(0,0,0,0.2)",
-          borderBottom: "1px solid rgba(255,255,255,0.04)",
+          background: isLight ? "#f9f9f9" : "#0f0f0f",
+          borderBottom: `1px solid ${borderLine}`,
         }}>
           {tabItems.map(t => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
               style={{
-                flex: 1, padding: "10px 0 8px", background: tab === t.key ? "rgba(212,168,83,0.1)" : "transparent",
+                flex: 1, padding: "10px 0 8px", background: "transparent",
                 border: "none", cursor: "pointer",
-                borderBottom: tab === t.key ? "2px solid #d4af37" : "2px solid transparent",
-                borderRadius: "6px 6px 0 0",
+                borderBottom: tab === t.key ? "3px solid #ff0000" : "3px solid transparent",
+                borderRadius: "0",
                 display: "flex", flexDirection: "column", alignItems: "center", gap: "3px",
                 transition: "all 0.2s",
               }}
             >
-              <span style={{ fontSize: "14px" }}>{t.icon}</span>
+              <span style={{ fontSize: "14px", color: tab === t.key ? "#ff0000" : textMuted }}>{t.icon}</span>
               <span style={{
                 fontSize: "9px", fontWeight: 700, letterSpacing: "1.5px",
-                color: tab === t.key ? "#d4af37" : "rgba(255,255,255,0.35)",
+                color: tab === t.key ? (isLight ? "#0f0f0f" : "#ffffff") : textMuted,
                 fontFamily: "Montserrat, sans-serif",
                 textTransform: "uppercase",
               }}>{t.label}</span>
@@ -248,12 +260,12 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
               {/* PDF Upload */}
               <label style={{
                 cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center",
-                gap: "10px", width: "100%", padding: "14px",
-                background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                borderRadius: "10px", border: "none",
-                color: textMain, fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "14px",
-                boxShadow: "0 4px 15px rgba(16,185,129,0.25)",
+                gap: "10px", width: "100%", padding: "12px",
+                background: "#ff0000",
+                borderRadius: "20px", border: "none",
+                color: "#ffffff", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "14px",
                 marginBottom: "20px",
+                transition: "background 0.2s",
               }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="12" y2="12"/><line x1="15" y1="15" x2="12" y2="12"/></svg>
                 Upload PDF Rates
@@ -308,80 +320,158 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
                 />
               </label>
 
-              {/* Rate rows */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              {/* Redesigned appealing Rate cards */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {editRates.map((r, i) => (
-                  <div key={`${r.code}-${r.against || "ZWG"}`} style={{
-                    display: "grid", gridTemplateColumns: "90px 62px 1fr 1fr",
-                    gap: "6px", alignItems: "center",
-                    padding: "8px 12px",
-                    background: "rgba(255,255,255,0.02)",
-                    borderRadius: "8px",
-                    border: "1px solid rgba(255,255,255,0.04)",
-                  }}>
-                    <span style={{
-                      fontSize: "12px", fontWeight: 700, color: "#d4af37",
-                      fontFamily: "JetBrains Mono, monospace", whiteSpace: "nowrap",
-                    }}>{r.flag} {r.code}</span>
-                    <select
-                      value={r.against || "ZWG"}
-                      onChange={e => {
-                        const next = [...editRates];
-                        next[i] = { ...next[i], against: e.target.value };
-                        setEditRates(next);
-                      }}
-                      style={{
-                        background: bgInput, border: "1px solid rgba(255,255,255,0.08)",
-                        borderRadius: "6px", padding: "7px 4px",
-                        color: textMain, fontSize: "11px", fontFamily: "JetBrains Mono, monospace",
-                        outline: "none",
-                      }}
-                    >
-                      <option value="ZWG">ZWG</option>
-                      <option value="USD">USD</option>
-                      <option value="ZAR">ZAR</option>
-                    </select>
-                    <input
-                      inputMode="decimal" value={r.buy} placeholder="Buy"
-                      onKeyPress={(e) => { if (!/[0-9.]/.test(e.key)) e.preventDefault(); }}
-                      onChange={e => {
-                        let val = e.target.value.replace(/[^0-9.]/g, '');
-                        if ((val.match(/\./g) || []).length > 1) val = val.substring(0, val.lastIndexOf('.'));
-                        const next = [...editRates]; next[i] = { ...next[i], buy: val }; setEditRates(next);
-                      }}
-                      style={{
-                        background: bgInput, border: "1px solid rgba(42,183,169,0.2)",
-                        borderRadius: "6px", padding: "8px 10px",
-                        color: "#2ab7a9", fontSize: "13px", fontFamily: "JetBrains Mono, monospace",
-                        outline: "none",
-                      }}
-                    />
-                    <input
-                      inputMode="decimal" value={r.sell} placeholder="Sell"
-                      onKeyPress={(e) => { if (!/[0-9.]/.test(e.key)) e.preventDefault(); }}
-                      onChange={e => {
-                        let val = e.target.value.replace(/[^0-9.]/g, '');
-                        if ((val.match(/\./g) || []).length > 1) val = val.substring(0, val.lastIndexOf('.'));
-                        const next = [...editRates]; next[i] = { ...next[i], sell: val }; setEditRates(next);
-                      }}
-                      style={{
-                        background: bgInput, border: "1px solid rgba(230,57,70,0.2)",
-                        borderRadius: "6px", padding: "8px 10px",
-                        color: "#e63946", fontSize: "13px", fontFamily: "JetBrains Mono, monospace",
-                        outline: "none",
-                      }}
-                    />
+                  <div 
+                    key={`${r.code}-${r.against || "ZWG"}`} 
+                    style={{
+                      background: isLight ? "#ffffff" : "#1f1f1f",
+                      border: `1px solid ${borderLine}`,
+                      borderRadius: "12px",
+                      padding: "16px",
+                      boxShadow: isLight ? "0 4px 12px rgba(0,0,0,0.04)" : "0 4px 12px rgba(0,0,0,0.15)",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "12px",
+                    }}
+                  >
+                    {/* Top Row: Currency Flag, Info & Actions */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ fontSize: "20px" }}>{r.flag}</span>
+                        <div>
+                          <span style={{ fontSize: "14px", fontWeight: 700, color: textMain }}>
+                            {r.code}
+                          </span>
+                          <span style={{ fontSize: "10px", color: textMuted, marginLeft: "6px" }}>
+                            {r.name}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span style={{ fontSize: "10px", color: textMuted, fontWeight: 500 }}>against</span>
+                        <select
+                          value={r.against || "ZWG"}
+                          onChange={e => {
+                            const next = [...editRates];
+                            next[i] = { ...next[i], against: e.target.value };
+                            setEditRates(next);
+                          }}
+                          style={{
+                            background: bgInput, 
+                            border: `1px solid ${borderLine}`,
+                            borderRadius: "6px", 
+                            padding: "4px 8px",
+                            color: textMain, 
+                            fontSize: "11px", 
+                            fontFamily: "JetBrains Mono, monospace",
+                            outline: "none", 
+                            cursor: "pointer"
+                          }}
+                        >
+                          <option value="ZWG">ZWG</option>
+                          <option value="USD">USD</option>
+                          <option value="ZAR">ZAR</option>
+                        </select>
+                        
+                        <button
+                          onClick={() => removeCurrency(r.code, r.against || "ZWG")}
+                          style={{
+                            background: "transparent", 
+                            border: "none", 
+                            color: "#ef4444",
+                            fontSize: "14px", 
+                            cursor: "pointer", 
+                            padding: "4px 8px",
+                            display: "flex", 
+                            alignItems: "center", 
+                            justifyContent: "center",
+                            marginLeft: "4px",
+                          }}
+                          title="Remove currency"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Bottom Row: Buy & Sell inputs */}
+                    <div style={{ display: "flex", gap: "12px" }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: "10px", color: "#10b981", fontWeight: 700, marginBottom: "4px", letterSpacing: "0.5px" }}>WE BUY</div>
+                        <input
+                          inputMode="decimal" 
+                          value={r.buy} 
+                          placeholder="0.00"
+                          onKeyPress={(e) => { if (!/[0-9.]/.test(e.key)) e.preventDefault(); }}
+                          onChange={e => {
+                            let val = e.target.value.replace(/[^0-9.]/g, '');
+                            if ((val.match(/\./g) || []).length > 1) val = val.substring(0, val.lastIndexOf('.'));
+                            const next = [...editRates]; next[i] = { ...next[i], buy: val }; setEditRates(next);
+                          }}
+                          style={{
+                            width: "100%",
+                            background: bgInput, 
+                            border: "1px solid rgba(16,185,129,0.25)",
+                            borderRadius: "8px", 
+                            padding: "10px 12px",
+                            color: "#10b981", 
+                            fontWeight: 600,
+                            fontSize: "13px", 
+                            fontFamily: "JetBrains Mono, monospace",
+                            outline: "none",
+                            boxSizing: "border-box",
+                            transition: "border-color 0.2s",
+                          }}
+                          onFocus={e => e.target.style.borderColor = "#10b981"}
+                          onBlur={e => e.target.style.borderColor = "rgba(16,185,129,0.25)"}
+                        />
+                      </div>
+                      
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: "10px", color: "#ef4444", fontWeight: 700, marginBottom: "4px", letterSpacing: "0.5px" }}>WE SELL</div>
+                        <input
+                          inputMode="decimal" 
+                          value={r.sell} 
+                          placeholder="0.00"
+                          onKeyPress={(e) => { if (!/[0-9.]/.test(e.key)) e.preventDefault(); }}
+                          onChange={e => {
+                            let val = e.target.value.replace(/[^0-9.]/g, '');
+                            if ((val.match(/\./g) || []).length > 1) val = val.substring(0, val.lastIndexOf('.'));
+                            const next = [...editRates]; next[i] = { ...next[i], sell: val }; setEditRates(next);
+                          }}
+                          style={{
+                            width: "100%",
+                            background: bgInput, 
+                            border: "1px solid rgba(239,68,68,0.25)",
+                            borderRadius: "8px", 
+                            padding: "10px 12px",
+                            color: "#ef4444", 
+                            fontWeight: 600,
+                            fontSize: "13px", 
+                            fontFamily: "JetBrains Mono, monospace",
+                            outline: "none",
+                            boxSizing: "border-box",
+                            transition: "border-color 0.2s",
+                          }}
+                          onFocus={e => e.target.style.borderColor = "#ef4444"}
+                          onBlur={e => e.target.style.borderColor = "rgba(239,68,68,0.25)"}
+                        />
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
 
               <button onClick={saveRates} style={{
                 width: "100%", padding: "12px", marginTop: "16px",
-                background: "linear-gradient(135deg, #d4af37, #b8962e)",
-                color: "#0f172a", border: "none", borderRadius: "10px",
-                fontFamily: "Montserrat, sans-serif", fontWeight: 800,
-                fontSize: "13px", letterSpacing: "2px", cursor: "pointer",
-                boxShadow: "0 4px 15px rgba(212,168,83,0.25)",
+                background: "#ff0000",
+                color: "#ffffff", border: "none", borderRadius: "20px",
+                fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+                fontSize: "13px", letterSpacing: "1px", cursor: "pointer",
+                transition: "background 0.2s",
               }}>SAVE RATES</button>
             </div>
           )}
@@ -400,15 +490,15 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
                   <div key={`${r.code}-${r.against || "ZWG"}`} style={{
                     display: "flex", justifyContent: "space-between", alignItems: "center",
                     padding: "8px 12px", borderRadius: "8px",
-                    background: "rgba(255,255,255,0.02)",
-                    border: "1px solid rgba(255,255,255,0.04)",
+                    background: bgInput,
+                    border: `1px solid ${borderLine}`,
                   }}>
-                    <span style={{ fontSize: "12px", fontWeight: 600, color: "#d4af37", fontFamily: "JetBrains Mono, monospace" }}>
+                    <span style={{ fontSize: "12px", fontWeight: 600, color: "#ff0000", fontFamily: "JetBrains Mono, monospace" }}>
                       {r.flag} {r.code} <span style={{ color: "rgba(255,255,255,0.3)" }}>vs {r.against || "ZWG"}</span> <span style={{ color: textMuted, fontWeight: 400 }}>— {r.name}</span>
                     </span>
                     <button onClick={() => removeCurrency(r.code, r.against || "ZWG")} style={{
                       background: "rgba(239,68,68,0.1)", color: "#ef4444",
-                      border: "1px solid rgba(239,68,68,0.2)", borderRadius: "6px",
+                      border: "none", borderRadius: "14px",
                       padding: "5px 12px", fontSize: "11px", cursor: "pointer", fontWeight: 600,
                     }}>Remove</button>
                   </div>
@@ -437,13 +527,13 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
                   <div key={p.code} style={{
                     display: "flex", justifyContent: "space-between", alignItems: "center",
                     padding: "7px 12px", borderRadius: "6px",
-                    background: "rgba(255,255,255,0.015)",
-                    border: "1px solid rgba(255,255,255,0.03)",
+                    background: bgInput,
+                    border: `1px solid ${borderLine}`,
                   }}>
                     <span style={{ fontSize: "12px", fontWeight: 600, color: textMuted, fontFamily: "Inter, sans-serif" }}>{p.flag} {p.code} — {p.name}</span>
                     <button onClick={() => addPreset(p)} style={{
-                      background: "rgba(212,168,83,0.1)", color: "#d4af37",
-                      border: "1px solid rgba(212,168,83,0.2)", borderRadius: "6px",
+                      background: isLight ? "#f2f2f2" : "#272727", color: textMain,
+                      border: "none", borderRadius: "14px",
                       padding: "5px 12px", fontSize: "11px", cursor: "pointer", fontWeight: 600,
                     }}>Add</button>
                   </div>
@@ -464,12 +554,13 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
               <div style={{ display: "flex", gap: "8px", marginBottom: "24px" }}>
                 {(["video", "announcement"] as const).map(mode => (
                   <button key={mode} onClick={() => setDisplayMode(mode)} style={{
-                    flex: 1, padding: "12px", borderRadius: "10px", cursor: "pointer",
-                    border: displayMode === mode ? "1px solid rgba(212,168,83,0.4)" : "1px solid rgba(255,255,255,0.06)",
-                    background: displayMode === mode ? "linear-gradient(135deg, rgba(212,168,83,0.15), rgba(212,168,83,0.05))" : "rgba(255,255,255,0.02)",
-                    color: displayMode === mode ? "#d4af37" : "rgba(255,255,255,0.5)",
+                    flex: 1, padding: "10px", borderRadius: "18px", cursor: "pointer",
+                    border: "none",
+                    background: displayMode === mode ? "#ff0000" : (isLight ? "#f2f2f2" : "#272727"),
+                    color: displayMode === mode ? "#ffffff" : textMain,
                     fontFamily: "Montserrat, sans-serif", fontWeight: 700,
                     fontSize: "12px", letterSpacing: "1px", textTransform: "uppercase",
+                    transition: "all 0.2s",
                   }}>{mode}</button>
                 ))}
               </div>
@@ -486,7 +577,7 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
                     placeholder="Enter announcement text..."
                     style={{
                       width: "100%", height: "120px", resize: "vertical", marginBottom: "16px",
-                      background: bgInput, border: "1px solid rgba(255,255,255,0.08)",
+                      background: bgInput, border: `1px solid ${borderLine}`,
                       borderRadius: "8px", padding: "12px", color: textMain, fontSize: "13px",
                       fontFamily: "Inter, sans-serif", outline: "none",
                     }}
@@ -496,11 +587,11 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
 
               <button onClick={saveDisplay} style={{
                 width: "100%", padding: "12px",
-                background: "linear-gradient(135deg, #d4af37, #b8962e)",
-                color: "#0f172a", border: "none", borderRadius: "10px",
-                fontFamily: "Montserrat, sans-serif", fontWeight: 800,
-                fontSize: "13px", letterSpacing: "2px", cursor: "pointer",
-                boxShadow: "0 4px 15px rgba(212,168,83,0.25)",
+                background: "#ff0000",
+                color: "#ffffff", border: "none", borderRadius: "20px",
+                fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+                fontSize: "13px", letterSpacing: "1px", cursor: "pointer",
+                transition: "background 0.2s",
               }}>SAVE DISPLAY SETTINGS</button>
             </div>
           )}
@@ -524,7 +615,7 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
                     placeholder={field.placeholder}
                     style={{
                       width: "100%", height: field.h, resize: "vertical",
-                      background: bgInput, border: "1px solid rgba(255,255,255,0.08)",
+                      background: bgInput, border: `1px solid ${borderLine}`,
                       borderRadius: "8px", padding: "12px", color: textMain, fontSize: "13px",
                       fontFamily: "Inter, sans-serif", outline: "none",
                     }}
@@ -544,11 +635,11 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
                 flash("Branding saved!");
               }} style={{
                 width: "100%", padding: "12px",
-                background: "linear-gradient(135deg, #d4af37, #b8962e)",
-                color: "#0f172a", border: "none", borderRadius: "10px",
-                fontFamily: "Montserrat, sans-serif", fontWeight: 800,
-                fontSize: "13px", letterSpacing: "2px", cursor: "pointer",
-                boxShadow: "0 4px 15px rgba(212,168,83,0.25)",
+                background: "#ff0000",
+                color: "#ffffff", border: "none", borderRadius: "20px",
+                fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+                fontSize: "13px", letterSpacing: "1px", cursor: "pointer",
+                transition: "background 0.2s",
               }}>SAVE BRANDING</button>
             </div>
           )}
@@ -573,7 +664,7 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
                   placeholder={field.placeholder}
                   style={{
                     width: "100%", marginBottom: "10px",
-                    background: bgInput, border: "1px solid rgba(255,255,255,0.08)",
+                    background: bgInput, border: `1px solid ${borderLine}`,
                     borderRadius: "8px", padding: "10px 14px", color: textMain, fontSize: "13px",
                     fontFamily: "Inter, sans-serif", outline: "none",
                   }}
@@ -582,25 +673,26 @@ const AdminDrawer = ({ state, onUpdate, onClose }: Props) => {
 
               <button onClick={updatePassword} style={{
                 width: "100%", padding: "12px",
-                background: "linear-gradient(135deg, #d4af37, #b8962e)",
-                color: "#0f172a", border: "none", borderRadius: "10px",
-                fontFamily: "Montserrat, sans-serif", fontWeight: 800,
-                fontSize: "13px", letterSpacing: "2px", cursor: "pointer",
-                boxShadow: "0 4px 15px rgba(212,168,83,0.25)",
+                background: "#ff0000",
+                color: "#ffffff", border: "none", borderRadius: "20px",
+                fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+                fontSize: "13px", letterSpacing: "1px", cursor: "pointer",
+                transition: "background 0.2s",
               }}>UPDATE PASSWORD</button>
             </div>
           )}
         </div>
 
         {/* Logout */}
-        <button onClick={onClose} style={{
-          padding: "14px", background: bgInput,
-          border: "none", borderTop: "1px solid rgba(255,255,255,0.06)",
-          color: textMuted, fontSize: "11px", fontWeight: 700,
-          letterSpacing: "2px", cursor: "pointer",
-          fontFamily: "Montserrat, sans-serif",
-          transition: "all 0.2s",
-        }}>LOGOUT & CLOSE</button>
+          <button onClick={onClose} style={{
+            padding: "12px", background: isLight ? "#f2f2f2" : "#272727",
+            border: "none", borderTop: `1px solid ${borderLine}`,
+            color: textMain, fontSize: "11px", fontWeight: 700,
+            letterSpacing: "2px", cursor: "pointer",
+            fontFamily: "Montserrat, sans-serif",
+            borderRadius: "18px", margin: "16px",
+            transition: "all 0.2s",
+          }}>LOGOUT & CLOSE</button>
       </div>
     </div>
   );

@@ -1,15 +1,5 @@
 import { useEffect, useState } from "react";
 import { AppState } from "@/lib/store";
-import {
-  DeviceRecord,
-  approveDevice,
-  getDeviceId,
-  loadRegistry,
-  removeDevice,
-  renameDevice,
-  revokeDevice,
-  setMaxDevices,
-} from "@/lib/deviceRegistry";
 
 interface Props {
   state: AppState;
@@ -29,7 +19,7 @@ const FONT_FAMILIES = [
 ];
 
 const SuperAdminDrawer = ({ state, onUpdate, onClose }: Props) => {
-  const [tab, setTab] = useState<"display" | "header" | "typography" | "devices" | "security">("display");
+  const [tab, setTab] = useState<"display" | "header" | "typography" | "security">("display");
   const [feedback, setFeedback] = useState("");
 
   // Security
@@ -103,41 +93,56 @@ const SuperAdminDrawer = ({ state, onUpdate, onClose }: Props) => {
   };
 
   
-  const isLight = state.adminTheme === "light";
   const [adminTheme, setAdminTheme] = useState<"light"|"dark">(state.adminTheme === "light" ? "light" : "dark");
-  const bgMain = isLight ? "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)" : "linear-gradient(180deg, #0f172a 0%, #0c1220 100%)";
-  const textMain = isLight ? "#0f172a" : "#fff";
-  const textMuted = isLight ? "#64748b" : "rgba(255,255,255,0.4)";
-  const bgInput = isLight ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.4)";
-  const borderLine = isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)";
+  const isLight = adminTheme === "light";
+  const bgMain = isLight ? "#ffffff" : "#0f0f0f";
+  const textMain = isLight ? "#000000" : "#ffffff";
+  const textMuted = isLight ? "#212121" : "#f1f1f1";
+  const bgInput = isLight ? "#f9f9f9" : "#272727";
+  const borderLine = isLight ? "#e5e5e5" : "#3f3f3f";
+  const cardShadow = isLight ? "0 4px 12px rgba(0,0,0,0.03)" : "0 4px 12px rgba(0,0,0,0.18)";
 
   const tabItems = [
     { key: "display" as const, label: "Display", icon: "🖥" },
     { key: "header" as const, label: "Header", icon: "📰" },
     { key: "typography" as const, label: "Fonts", icon: "🔤" },
-    { key: "devices" as const, label: "Devices", icon: "📺" },
     { key: "security" as const, label: "Security", icon: "🔐" },
   ];
 
-  const accent = "#a855f7";
-  const accentDark = "#7c3aed";
+  const accent = "#ff0000";
+  const accentDark = "#cc0000";
 
   return (
     <div
-      style={ Object.assign({}, { "--text-muted": textMuted, "--text-main": textMain, "--bg-input": bgInput, "--border-line": borderLine } as any, {
+      style={ Object.assign({}, { 
+        "--text-muted": textMuted, 
+        "--text-main": textMain, 
+        "--bg-input": bgInput, 
+        "--border-line": borderLine,
+        "--card-shadow": cardShadow,
+      } as Record<string, string>, {
         position: "fixed", inset: 0, zIndex: 10000,
-        background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)",
         display: "flex", justifyContent: "flex-end",
       }) }
-      onClick={onClose}
     >
+      {/* Sibling backdrop overlay with blur, keeping drawer text crisp and sharp */}
+      <div 
+        style={{
+          position: "absolute", inset: 0,
+          background: "rgba(0,0,0,0.6)",
+          backdropFilter: "blur(4px)",
+        }}
+        onClick={onClose}
+      />
       <div
         style={{
+          position: "relative",
           width: "520px", maxWidth: "94vw", height: "100%",
           background: bgMain, color: textMain,
           display: "flex", flexDirection: "column", overflow: "hidden",
           boxShadow: "-12px 0 50px rgba(0,0,0,0.7)",
-          borderLeft: `1px solid ${accent}33`,
+          borderLeft: `1px solid ${borderLine}`,
+          zIndex: 1,
         }}
         onClick={e => e.stopPropagation()}
       >
@@ -146,17 +151,16 @@ const SuperAdminDrawer = ({ state, onUpdate, onClose }: Props) => {
           style={{
             display: "flex", justifyContent: "space-between", alignItems: "center",
             padding: "22px 26px",
-            background: `linear-gradient(135deg, ${accent}1f 0%, transparent 100%)`,
-            borderBottom: `1px solid ${accent}33`,
+            background: isLight ? "#ffffff" : "#0f0f0f",
+            borderBottom: `1px solid ${borderLine}`,
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div
               style={{
-                width: "42px", height: "42px", borderRadius: "10px",
-                background: `linear-gradient(135deg, ${accent}, ${accentDark})`,
+                width: "42px", height: "42px", borderRadius: "21px",
+                background: "#ff0000",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: `0 4px 14px ${accent}66`,
                 fontSize: "20px",
               }}
             >
@@ -166,7 +170,7 @@ const SuperAdminDrawer = ({ state, onUpdate, onClose }: Props) => {
               <div
                 style={{
                   fontFamily: "Montserrat, sans-serif", fontWeight: 800,
-                  fontSize: "15px", color: textMain, letterSpacing: "3px",
+                  fontSize: "15px", color: "#ff0000", letterSpacing: "2px",
                 }}
               >
                 SUPER ADMIN
@@ -174,7 +178,7 @@ const SuperAdminDrawer = ({ state, onUpdate, onClose }: Props) => {
               <div
                 style={{
                   fontFamily: "Inter, sans-serif", fontSize: "11px",
-                  color: accent, marginTop: "2px", letterSpacing: "0.5px",
+                  color: textMuted, marginTop: "2px", letterSpacing: "0.5px",
                 }}
               >
                 Full system control
@@ -184,9 +188,9 @@ const SuperAdminDrawer = ({ state, onUpdate, onClose }: Props) => {
           <button
             onClick={onClose}
             style={{
-              background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(255,255,255,0.05)", border: `1px solid ${borderLine}`,
               color: textMuted, fontSize: "16px", cursor: "pointer",
-              width: "36px", height: "36px", borderRadius: "8px",
+              width: "36px", height: "36px", borderRadius: "18px",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}
           >
@@ -198,10 +202,10 @@ const SuperAdminDrawer = ({ state, onUpdate, onClose }: Props) => {
         {feedback && (
           <div
             style={{
-              background: `linear-gradient(90deg, ${accent}33 0%, ${accent}0d 100%)`,
-              color: textMain, padding: "11px 26px", fontSize: "13px",
+              background: "rgba(16,185,129,0.15)",
+              color: "#10b981", padding: "11px 26px", fontSize: "13px",
               fontFamily: "Inter, sans-serif", fontWeight: 500,
-              borderBottom: `1px solid ${accent}33`,
+              borderBottom: `1px solid ${borderLine}`,
             }}
           >
             ✓ {feedback}
@@ -212,7 +216,8 @@ const SuperAdminDrawer = ({ state, onUpdate, onClose }: Props) => {
         <div
           style={{
             display: "flex", gap: "4px", padding: "8px 14px",
-            background: "rgba(0,0,0,0.35)", borderBottom: "1px solid rgba(255,255,255,0.04)",
+            background: isLight ? "#f9f9f9" : "#0f0f0f",
+            borderBottom: `1px solid ${borderLine}`,
           }}
         >
           {tabItems.map(t => (
@@ -220,19 +225,19 @@ const SuperAdminDrawer = ({ state, onUpdate, onClose }: Props) => {
               key={t.key}
               onClick={() => setTab(t.key)}
               style={{
-                flex: 1, padding: "11px 0 9px",
-                background: tab === t.key ? `linear-gradient(135deg, ${accent}26, ${accent}0d)` : "transparent",
-                border: tab === t.key ? `1px solid ${accent}40` : "1px solid transparent",
-                cursor: "pointer", borderRadius: "8px",
-                display: "flex", flexDirection: "column", alignItems: "center", gap: "4px",
+                flex: 1, padding: "10px 0 8px", background: "transparent",
+                border: "none", cursor: "pointer",
+                borderBottom: tab === t.key ? "3px solid #ff0000" : "3px solid transparent",
+                borderRadius: "0",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: "3px",
                 transition: "all 0.2s",
               }}
             >
-              <span style={{ fontSize: "16px" }}>{t.icon}</span>
+              <span style={{ fontSize: "16px", color: tab === t.key ? "#ff0000" : textMuted }}>{t.icon}</span>
               <span
                 style={{
                   fontSize: "10px", fontWeight: 700, letterSpacing: "1.5px",
-                  color: tab === t.key ? accent : "rgba(255,255,255,0.4)",
+                  color: tab === t.key ? (isLight ? "#0f0f0f" : "#ffffff") : textMuted,
                   fontFamily: "Montserrat, sans-serif", textTransform: "uppercase",
                 }}
               >
@@ -413,9 +418,6 @@ const SuperAdminDrawer = ({ state, onUpdate, onClose }: Props) => {
             </div>
           )}
 
-          {/* DEVICES */}
-          {tab === "devices" && <DevicesPanel accent={accent} />}
-
           {/* SECURITY */}
           {tab === "security" && (
             <div>
@@ -457,11 +459,13 @@ const SuperAdminDrawer = ({ state, onUpdate, onClose }: Props) => {
         <button
           onClick={onClose}
           style={{
-            padding: "14px", background: bgInput,
-            border: "none", borderTop: `1px solid ${accent}33`,
-            color: textMuted, fontSize: "11px", fontWeight: 700,
+            padding: "12px", background: isLight ? "#f2f2f2" : "#272727",
+            border: "none", borderTop: `1px solid ${borderLine}`,
+            color: textMain, fontSize: "11px", fontWeight: 700,
             letterSpacing: "2px", cursor: "pointer",
             fontFamily: "Montserrat, sans-serif",
+            borderRadius: "18px", margin: "16px",
+            transition: "all 0.2s",
           }}
         >
           LOGOUT & CLOSE
@@ -488,10 +492,10 @@ const SectionLabel = ({ children }: { children: React.ReactNode }) => (
 const Card = ({ children }: { children: React.ReactNode }) => (
   <div
     style={{
-      background: "rgba(255,255,255,0.03)", borderRadius: "12px",
+      background: "var(--bg-input)", borderRadius: "12px",
       padding: "16px", marginBottom: "22px",
-      border: "1px solid rgba(255,255,255,0.06)",
-      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.03)",
+      border: "1px solid var(--border-line)",
+      boxShadow: "var(--card-shadow)",
     }}
   >
     {children}
@@ -505,13 +509,13 @@ const Row = ({ children }: { children: React.ReactNode }) => (
 const hintStyle: React.CSSProperties = { fontSize: "10px", color: "var(--text-muted)" };
 
 const pwdInputStyle: React.CSSProperties = {
-  width: "100%", background: "var(--bg-input)", border: "1px solid rgba(255,255,255,0.1)",
+  width: "100%", background: "var(--bg-input)", border: "1px solid var(--border-line)",
   borderRadius: 8, padding: "10px 12px", color: "var(--text-main)", fontSize: 13,
   fontFamily: "Inter, sans-serif", outline: "none", marginBottom: 10, boxSizing: "border-box",
 };
 
 const selectStyle: React.CSSProperties = {
-  width: "100%", background: "var(--bg-input)", border: "1px solid rgba(255,255,255,0.1)",
+  width: "100%", background: "var(--bg-input)", border: "1px solid var(--border-line)",
   borderRadius: "8px", padding: "10px 12px", color: "var(--text-main)", fontSize: "13px",
   fontFamily: "Inter, sans-serif", outline: "none", cursor: "pointer",
 };
@@ -535,145 +539,16 @@ const PrimaryButton = ({ children, onClick }: { children: React.ReactNode; onCli
   <button
     onClick={onClick}
     style={{
-      width: "100%", padding: "13px",
-      background: "linear-gradient(135deg, #a855f7, #7c3aed)",
-      color: "var(--text-main)", border: "none", borderRadius: "10px",
-      fontFamily: "Montserrat, sans-serif", fontWeight: 800,
-      fontSize: "13px", letterSpacing: "2px", cursor: "pointer",
-      boxShadow: "0 6px 20px rgba(168,85,247,0.35)",
+      width: "100%", padding: "12px",
+      background: "#ff0000",
+      color: "#ffffff", border: "none", borderRadius: "20px",
+      fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+      fontSize: "13px", letterSpacing: "1px", cursor: "pointer",
+      transition: "background 0.2s",
     }}
   >
     {children}
   </button>
 );
-
-/* ───────── Devices Panel ───────── */
-
-const DevicesPanel = ({ accent }: { accent: string }) => {
-  const [devices, setDevices] = useState<DeviceRecord[]>([]);
-  const [maxDev, setMaxDev] = useState(10);
-  const currentId = getDeviceId();
-
-  const refresh = () => {
-    const reg = loadRegistry();
-    setDevices([...reg.devices].sort((a, b) => a.firstSeen.localeCompare(b.firstSeen)));
-    setMaxDev(reg.maxDevices);
-  };
-
-  useEffect(() => {
-    refresh();
-    const h = () => refresh();
-    window.addEventListener("device-registry-updated", h);
-    window.addEventListener("storage", h);
-    const iv = setInterval(refresh, 2000);
-    return () => {
-      window.removeEventListener("device-registry-updated", h);
-      window.removeEventListener("storage", h);
-      clearInterval(iv);
-    };
-  }, []);
-
-  const pending = devices.filter(d => d.status === "pending");
-  const approved = devices.filter(d => d.status === "approved");
-  const revoked = devices.filter(d => d.status === "revoked");
-
-  const statusColor = (s: string) =>
-    s === "approved" ? "#10b981" : s === "pending" ? "#f59e0b" : "#ef4444";
-
-  const DeviceRow = ({ d }: { d: DeviceRecord }) => (
-    <div
-      style={{
-        background: "rgba(255,255,255,0.03)", border: `1px solid ${d.id === currentId ? accent + "55" : "rgba(255,255,255,0.06)"}`,
-        borderRadius: 10, padding: 12, marginBottom: 10,
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-        <input
-          value={d.name}
-          onChange={e => { renameDevice(d.id, e.target.value); refresh(); }}
-          style={{
-            background: "transparent", border: "none", color: "var(--text-main)",
-            fontSize: 13, fontWeight: 700, fontFamily: "Inter, sans-serif",
-            outline: "none", width: "60%",
-          }}
-        />
-        <span style={{
-          fontSize: 9, fontWeight: 800, letterSpacing: 1.5,
-          padding: "3px 8px", borderRadius: 4,
-          background: statusColor(d.status) + "22", color: statusColor(d.status),
-          textTransform: "uppercase",
-        }}>
-          {d.status}{d.id === currentId ? " · this" : ""}
-        </span>
-      </div>
-      <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "JetBrains Mono, monospace", wordBreak: "break-all", marginBottom: 8 }}>
-        {d.id}
-      </div>
-      <div style={{ display: "flex", gap: 6 }}>
-        {d.status !== "approved" && (
-          <button onClick={() => { approveDevice(d.id); refresh(); }}
-            style={miniBtn("#10b981")}>APPROVE</button>
-        )}
-        {d.status === "approved" && d.id !== currentId && (
-          <button onClick={() => { revokeDevice(d.id); refresh(); }}
-            style={miniBtn("#ef4444")}>REVOKE</button>
-        )}
-        {d.id !== currentId && (
-          <button onClick={() => { if (confirm("Remove this device?")) { removeDevice(d.id); refresh(); } }}
-            style={miniBtn("rgba(255,255,255,0.15)")}>REMOVE</button>
-        )}
-      </div>
-    </div>
-  );
-
-  return (
-    <div>
-      <SectionLabel>Max Devices Allowed</SectionLabel>
-      <Card>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <input
-            type="number" min={1} value={maxDev}
-            onChange={e => { const n = parseInt(e.target.value, 10) || 1; setMaxDev(n); setMaxDevices(n); }}
-            style={{
-              width: 90, background: "var(--bg-input)", border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: 8, padding: "8px 12px", color: "var(--text-main)", fontSize: 14, outline: "none",
-            }}
-          />
-          <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
-            {approved.length} approved · {pending.length} pending
-          </span>
-        </div>
-      </Card>
-
-      {pending.length > 0 && (
-        <>
-          <SectionLabel>Pending Approval <span style={{ color: "#f59e0b" }}>({pending.length})</span></SectionLabel>
-          {pending.map(d => <DeviceRow key={d.id} d={d} />)}
-        </>
-      )}
-
-      <SectionLabel>Approved Devices <span style={{ color: "#10b981" }}>({approved.length})</span></SectionLabel>
-      {approved.length === 0 && (
-        <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 16 }}>No approved devices yet.</div>
-      )}
-      {approved.map(d => <DeviceRow key={d.id} d={d} />)}
-
-      {revoked.length > 0 && (
-        <>
-          <SectionLabel>Revoked <span style={{ color: "#ef4444" }}>({revoked.length})</span></SectionLabel>
-          {revoked.map(d => <DeviceRow key={d.id} d={d} />)}
-        </>
-      )}
-    </div>
-  );
-};
-
-const miniBtn = (color: string): React.CSSProperties => ({
-  flex: 1, padding: "7px 10px", background: color + "22",
-  border: `1px solid ${color}66`, borderRadius: 6,
-  color: color === "rgba(255,255,255,0.15)" ? "rgba(255,255,255,0.7)" : color,
-  fontSize: 10, fontWeight: 800, letterSpacing: 1, cursor: "pointer",
-  fontFamily: "Montserrat, sans-serif",
-});
 
 export default SuperAdminDrawer;

@@ -36,8 +36,8 @@ const LoginModalNew = ({ password, superPassword, onLogin }: Props) => {
       <form
         onSubmit={handleSubmit}
         style={{
-          background: "#06101d",
-          border: "1px solid rgba(212,175,55,0.2)",
+          background: "#0f0f0f",
+          border: "1px solid #3f3f3f",
           borderRadius: "12px",
           padding: "32px",
           width: "340px",
@@ -47,10 +47,10 @@ const LoginModalNew = ({ password, superPassword, onLogin }: Props) => {
         <div
           style={{
             width: "48px", height: "48px", borderRadius: "50%",
-            background: "rgba(212,175,55,0.1)",
+            background: "#272727",
             display: "flex", alignItems: "center", justifyContent: "center",
             margin: "0 auto 16px",
-            border: "1px solid rgba(212,175,55,0.2)",
+            border: "1px solid #3f3f3f",
           }}
         >
           <span style={{ fontSize: "20px" }}>🔒</span>
@@ -58,7 +58,7 @@ const LoginModalNew = ({ password, superPassword, onLogin }: Props) => {
         <h2
           style={{
             fontFamily: "Montserrat, Arial, sans-serif",
-            fontWeight: 700, fontSize: "14px", color: "#d4af37",
+            fontWeight: 700, fontSize: "14px", color: "#ff0000",
             letterSpacing: "3px", marginBottom: "20px",
           }}
         >
@@ -74,9 +74,9 @@ const LoginModalNew = ({ password, superPassword, onLogin }: Props) => {
           placeholder="Enter password"
           autoFocus
           style={{
-            width: "100%", background: "#0d1b2a",
-            border: "1px solid rgba(255,255,255,0.12)",
-            borderRadius: "6px", padding: "10px 14px",
+            width: "100%", background: "#272727",
+            border: "1px solid #3f3f3f",
+            borderRadius: "18px", padding: "10px 18px",
             color: "#fff", fontSize: "14px", outline: "none",
             marginBottom: "16px", boxSizing: "border-box",
           }}
@@ -87,8 +87,8 @@ const LoginModalNew = ({ password, superPassword, onLogin }: Props) => {
             onClick={() => window.dispatchEvent(new CustomEvent("admin-cancel"))}
             style={{
               flex: 1, padding: "10px", background: "none",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "6px", color: "rgba(255,255,255,0.5)",
+              border: "1px solid #3f3f3f",
+              borderRadius: "18px", color: "#aaaaaa",
               fontSize: "12px", fontWeight: 600, cursor: "pointer",
             }}
           >
@@ -98,10 +98,11 @@ const LoginModalNew = ({ password, superPassword, onLogin }: Props) => {
             type="submit"
             style={{
               flex: 1, padding: "10px",
-              background: "linear-gradient(180deg, #d4af37, #b8962e)",
-              border: "none", borderRadius: "6px",
-              color: "#06101d", fontSize: "12px", fontWeight: 700,
+              background: "#ff0000",
+              border: "none", borderRadius: "18px",
+              color: "#ffffff", fontSize: "12px", fontWeight: 700,
               letterSpacing: "1px", cursor: "pointer",
+              transition: "background 0.2s",
             }}
           >
             LOGIN

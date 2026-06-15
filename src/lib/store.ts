@@ -84,8 +84,20 @@ export async function loadState(): Promise<AppState> {
     const { data, error } = await supabase.from("app_state").select("state").eq("id", 1).single();
     if (!error && data?.state) {
       const remoteState = data.state as Partial<AppState>;
+      let needsSave = false;
+      if (remoteState.adminPassword === "admin") {
+        remoteState.adminPassword = "admin123";
+        needsSave = true;
+      }
+      if (!remoteState.superAdminPassword) {
+        remoteState.superAdminPassword = "kudzaim52000";
+        needsSave = true;
+      }
       const merged = { ...DEFAULT_STATE, ...remoteState, currencies: remoteState.currencies || DEFAULT_STATE.currencies };
       localStorage.setItem(STATE_KEY, JSON.stringify(merged));
+      if (needsSave) {
+        saveState(merged).catch(console.error);
+      }
       return merged;
     }
   } catch (err) {
@@ -98,6 +110,33 @@ export async function loadState(): Promise<AppState> {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed && Array.isArray(parsed.currencies)) {
+        if (parsed.adminPassword === "admin") {
+          parsed.adminPassword = "admin123";
+        }
+        if (!parsed.superAdminPassword) {
+          parsed.superAdminPassword = "kudzaim52000";
+        }
+        return { ...DEFAULT_STATE, ...parsed };
+      }
+    }
+  } catch (err) {
+    console.error("Error loading local state:", err);
+  }
+  return { ...DEFAULT_STATE, currencies: DEFAULT_STATE.currencies.map(c => ({ ...c })) };
+}
+
+export function getLocalState(): AppState {
+  try {
+    const raw = localStorage.getItem(STATE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.currencies)) {
+        if (parsed.adminPassword === "admin") {
+          parsed.adminPassword = "admin123";
+        }
+        if (!parsed.superAdminPassword) {
+          parsed.superAdminPassword = "kudzaim52000";
+        }
         return { ...DEFAULT_STATE, ...parsed };
       }
     }
